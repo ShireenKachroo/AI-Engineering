@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from google import genai
-
+from google.genai import types
 load_dotenv()  # load env vars ... gemini api
 
 api_key = os.getenv("GEMINI_API_KEY")
@@ -13,7 +13,20 @@ if not api_key:
 client = genai.Client(api_key = api_key)
 
 # create chat session
-chat = client.chats.create(model = "gemini-3.6-flash")
+chat = client.chats.create(
+	model = "gemini-3.6-flash",
+	config = types.GenerateContentConfig(
+		system_instruction = """
+        You are a friendly AI Engineering mentor.
+
+        - Explain concepts in simple language.
+        - Use practical examples wherever possible.
+        - Avoid unnecessary theoretical explanations.
+        - When helping with coding problems, give hints first.
+        - Encourage the user to think independently.
+        """
+	)
+)
 
 print("Gemini chatbot is ready!")
 print("Type 'exit' to quit\n")
