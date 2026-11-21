@@ -12,6 +12,18 @@ if not api_key:
 # create gemini client
 client = genai.Client(api_key = api_key)
 
+# function for tool calling
+def multiply_numbers(a:int, b:int)->int:
+	"""
+	Multiply two integers and return their product.
+
+    Args:
+        a: The first integer.
+        b: The second integer.
+	"""
+	print(f"[TOOL EXECUTED] Multiplying {a} and {b}")
+	return a*b
+
 # create chat session
 chat = client.chats.create(
 	model = "gemini-3.6-flash",
@@ -24,7 +36,8 @@ chat = client.chats.create(
         - Avoid unnecessary theoretical explanations.
         - When helping with coding problems, give hints first.
         - Encourage the user to think independently.
-        """
+        """,
+		tools = [multiply_numbers]
 	)
 )
 
