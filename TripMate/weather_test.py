@@ -1,3 +1,5 @@
+# Independent API TESTING
+
 import requests
 
 # GET city coordinates
