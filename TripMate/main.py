@@ -82,15 +82,23 @@ chat = client.chats.create(
 )
 
 
+
 # CHAT LOOP
 
 print("\nGhoomi Ghoomi Chalein?")
 print("Your Ghoomi Ghoomi Assistant is Ready.")
 print("Type 'exit' to quit.")
+print("Press Ctrl+C to interrupt the current response.\n")
 
 while True:
 
-    user_msg = input("You: ").strip()
+    # Take user input
+    try:
+        user_msg = input("You: ").strip()
+
+    except KeyboardInterrupt:
+        print("\nTripMate: Input cancelled. You can try again.")
+        continue
 
     if user_msg.lower() == "exit":
         print("TripMate: Safe travels! Goodbye!")
@@ -99,29 +107,25 @@ while True:
     if not user_msg:
         continue
 
+    # Generate streaming response
     try:
         reset_tool_call_budget()
 
-        print(
-            Fore.GREEN + "\nTripMate: " + Style.RESET_ALL,
-            end="",
-            flush=True
-        )
+        print(Fore.GREEN + "\nTripMate: " + Style.RESET_ALL, end="", flush=True)
 
         for chunk in chat.send_message_stream(user_msg):
-
             if chunk.text:
-                print(
-                    chunk.text,
-                    end="",
-                    flush=True
-                )
+                print(chunk.text, end="", flush=True)
 
         print("\n")
 
+    except KeyboardInterrupt:
+        print("\n\n" + Fore.YELLOW +
+              "[INTERRUPTED] Response generation stopped by user."
+              + Style.RESET_ALL)
+        print("TripMate: What would you like to do next?\n")
+        continue
+
     except Exception as e:
-        print(
-            Fore.RED +
-            f"\nSomething went wrong: {e}\n" +
-            Style.RESET_ALL
-        )
+        logging.exception("Something went wrong")
+        print(Fore.RED + f"\nError: {e}" + Style.RESET_ALL)
