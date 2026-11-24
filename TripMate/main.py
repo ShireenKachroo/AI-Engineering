@@ -81,23 +81,47 @@ chat = client.chats.create(
 	)
 )
 
+
 # CHAT LOOP
+
 print("\nGhoomi Ghoomi Chalein?")
 print("Your Ghoomi Ghoomi Assistant is Ready.")
 print("Type 'exit' to quit.")
 
 while True:
-	user_msg = input("You: ").strip()
 
-	if user_msg.lower() == "exit":
-		print("TripMate: Safe travels! Goodbye!")
-		break
-	if not user_msg:
-		continue
-	try:
-		reset_tool_call_budget()
-		response = chat.send_message(user_msg)
-		print("TripMate:", response.text)
-		print()
-	except Exception as e:
-		print(f"\n Something went wrong:{e}\n")
+    user_msg = input("You: ").strip()
+
+    if user_msg.lower() == "exit":
+        print("TripMate: Safe travels! Goodbye!")
+        break
+
+    if not user_msg:
+        continue
+
+    try:
+        reset_tool_call_budget()
+
+        print(
+            Fore.GREEN + "\nTripMate: " + Style.RESET_ALL,
+            end="",
+            flush=True
+        )
+
+        for chunk in chat.send_message_stream(user_msg):
+
+            if chunk.text:
+                print(
+                    chunk.text,
+                    end="",
+                    flush=True
+                )
+
+        print("\n")
+
+    except Exception as e:
+        print(
+            Fore.RED +
+            f"\nSomething went wrong: {e}\n" +
+            Style.RESET_ALL
+        )
